@@ -1,0 +1,68 @@
+/* Set the overall font and colors */
+body {
+    font-family: Arial, sans-serif;
+    color: #000000; /* Darker text for readability */
+    background-color: #f5f0e1; /* Light neutral brown background */
+}
+
+/* Navbar styling */
+.navbar-default {
+    background-color: #a67c52; /* Neutral brown tone */
+    border-color: #8b5e3c;
+}
+
+.navbar-default .navbar-brand,
+.navbar-default .navbar-nav > li > a {
+    color: #000000 !important; /* Black text on navbar */
+    font-family: Arial, sans-serif;
+}
+
+/* Panel (sidebar) styling */
+.panel {
+    background-color: #f5f0e1;
+    color: #333;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    border: none;
+}
+
+/* Control and button styling */
+#controls {
+    background-color: rgba(245, 240, 225, 0.8);
+    color: #333;
+    padding: 15px;
+    font-family: Arial, sans-serif;
+}
+
+.btn {
+    background-color: #a67c52; /* Button color */
+    color: white;
+    border: none;
+}
+
+.btn:hover {
+    background-color: #8b5e3c; /* Darker hover color */
+    color: white;
+}
+
+/* Popup styling */
+.leaflet-popup-content-wrapper {
+    max-height: 150px; /*limit inital height */
+    overflow: hidden; /*Hide overflow text */
+    cursor: pointer; /*Show Pointer cursor */
+    background-color: #f5f0e1;
+    color: #333;
+    font-family: Arial, sans-serif;
+    border-radius: 8px;
+}
+
+.leaflet-popup-content-wrapper.expanded {
+  max-height: none; /* Removes height limit */
+  overflow: visible; /* Shows all content */
+}
+
+.leaflet-popup-content h3 {
+    color: #a67c52;
+    margin-top: 0;
+    font-family: Arial, sans-serif;
+}
