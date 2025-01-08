@@ -1,51 +1,29 @@
-#
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    https://shiny.posit.co/
-#
-
+library(readr)
 library(shiny)
 library(shinyjs)
 library(leaflet)
 library(dplyr)
 library(sf)
-library(readr)
 library(shinyWidgets)
-library(googledrive)
 library(DT)
 library(markdown) # Ensure this is included to render Markdown
 
 # Read sitedata from CSV file
-sitedata <- read.csv("Summary Illegal Dumping Site Inventory (1).csv")
+sitedata <- readr::read_csv("www/Summary Illegal Dumping Site Inventory (1).csv")
 
 # Create spatial points data frame
-coordinates <- st_as_sf(sitedata, coords = c("Longitude", "Latitude"), crs = 4326)
-
-# Transform from NAD83 to WGS84
-coordinates <- st_transform(coordinates, crs = 4326)
+coordinates <- st_as_sf(sitedata, coords = c("Longitude", "Latitude"), crs = 4326) %>%
+  st_transform(crs = 4326)
 
 print(coordinates)
 
-# Shape file read
-shape_data <- st_read("jackson_wards.geojson")
-
-# Check alling the ticks for shape data
-shape_data <- st_transform(shape_data, crs = 4326)
-
 # Define UI
-ui <- navbarPage("Illegal Dumping Sites in Mississippi", id="nav",
-                 includeCSS("style.css"),
-                 
-                 tags$script(HTML("
-                      $(document).on('click', '.leaflet-popup-content-wrapper', function(){
-                            $(this.toggleClass('expanded');
-                                  });
-                          ")),
+ui <- navbarPage(
+    "Illegal Dumping Sites in Mississippi", id="nav",
+        includeCSS("style.css"),
                  tabPanel("Map",icon = icon("map"),
-                          div(class="outer",
+                          div(
+                            class="outer",
                               actionButton("button", "User Guide"),
                               leafletOutput("map", width = "100%", height = "700px"),
                               absolutePanel(
@@ -54,16 +32,14 @@ ui <- navbarPage("Illegal Dumping Sites in Mississippi", id="nav",
                                 width = 330, height = "auto",
                                 style = "background-color: rgba(255, 255, 255, 0.8); padding: 10px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);",
                                 h2("Search Options"),
-                                pickerInput(inputId = "source", label = "Select Zip Code",
-                                            choices = c(unique(sitedata$Zip_Code)),
+                                pickerInput(inputId = "source", label = "Select Zip Code", choices = unique(sitedata$Zip_Code),
                                             selected = NULL,
                                             multiple = TRUE),
                                 pickerInput(inputId = "City_source", label = "Select City",
-                                            choices = c(unique(sitedata$City)),
+                                            choices = unique(sitedata$City),
                                             selected = NULL, 
-                                            multiple = TRUE),
-                                br(),
-                                actionButton("view_data", "View Data Table")
+                                            multiple = TRUE)
+    
                                 
                               ),
                               verbatimTextOutput("site_info")
@@ -78,11 +54,8 @@ ui <- navbarPage("Illegal Dumping Sites in Mississippi", id="nav",
                           htmlOutput("data_dictionary")
                  ),
                  navbarMenu("About", icon = icon("info-circle"),
-                            tabPanel("About the Developer",
-                                     htmlOutput("about_developer") 
-                            ),
-                            tabPanel("Mission", fluid = TRUE, 
-                                     
+                            tabPanel("About the Developer", htmlOutput("about_developer")),
+                            tabPanel("Mission", 
                                      column(6,
                                             br(),
                                             h2("Why Have You Developed An Illegal Dumping Site Reporting Tool?"),
@@ -109,33 +82,27 @@ ui <- navbarPage("Illegal Dumping Sites in Mississippi", id="nav",
 # Define server logic
 server <- function(input, output, session) {
   
+  reactive_data <- reactive({
+    data <-sitedata
+    if(!is.null(input$source)) data <- data %>% filter(Zip_Code %in% input$source)
+    if(!is.null(input$source)) data <- data%>% filter(City %in% input$City_source)
+    data
+  })
+
+  #Render Map
   output$map <- renderLeaflet({
-    leaflet() %>%
+    leaflet(coordinates) %>%
       addProviderTiles(provider = "Esri.WorldTopoMap") %>%
-      addMapPane("polygonsPane", zIndex = 410) %>%
-      addMapPane("markersPane", zIndex = 420) %>% # Stacks markers on front of panes 
-      addPolygons(data = shape_data, color = "#9B9B9B", weight = 1, smoothFactor = 0.5,
-                  opacity = 1.0, fillOpacity = 0.5,
-                  highlightOptions = highlightOptions(color = "red", weight = 2,
-                                                      bringToFront = TRUE),
-                  options = pathOptions(pane = "polygonsPane")) %>%
       addCircleMarkers(data = sitedata,
                        lng = ~Longitude,
                        lat = ~Latitude,
                        popup = ~Site_ID,
-                       layerId = ~Site_ID,
-                       options = pathOptions("markersPane")) # Ensures markers are in front
+                       layerId = ~Site_ID, 
+                       radius = 4, color = "00732", fillOpacity = 0.7)
   })
 
-  observeEvent(input$view_data, {
-    updateTabsetPanel(session, "nav", selected = "Data Table")
-  })
   
-  # Render the full CSV data in the Data Table tab
-  output$data_table <- DT::renderDataTable({
-    DT::datatable(sitedata, options = list(pageLength = 10, scrollX = TRUE))
-  })
-  
+  ##Pop-UP Info###
   observeEvent(input$map_marker_click, {
     click <- input$map_marker_click
     site_data <- sitedata %>% filter(Site_ID == click$id)
@@ -167,20 +134,6 @@ server <- function(input, output, session) {
                 "<tr><th colspan='2' style='padding: 5px; border-bottom: 1px solid #ddd;'>No image available.</th></tr>"
               },
               "<tr><th colspan='2' style='padding: 5px; border-bottom: 1px solid #ddd; text-align:center;'>",
-              "<tr><th style='text-align:left; padding: 5px; border-bottom: 1px solid #ddd;'>Key Containments</th>",
-              "<td style='padding: 5px; border-bottom: 1px solid #ddd;'>", site_data$Key_Cont, "</td></tr>",
-              "<tr><th style='text-align:left; padding: 5px; border-bottom: 1px solid #ddd;'>Measured Total VOC Level</th>",
-              "<td style='padding: 5px; border-bottom: 1px solid #ddd;'>", site_data$Voc_level, "</td></tr>",
-              "<tr><th style='text-align:left; padding: 5px; border-bottom: 1px solid #ddd;'>Measured PM 10 Level</th>",
-              "<td style='padding: 5px; border-bottom: 1px solid #ddd;'>", site_data$PM_10, "</td></tr>",
-              "<tr><th style='text-align:left; padding: 5px; border-bottom: 1px solid #ddd;'>Measured PM 2.5 Level</th>",
-              "<td style='padding: 5px; border-bottom: 1px solid #ddd;'>", site_data$PM_2.5, "</td></tr>",
-              "<tr><th style='text-align:left; padding: 5px; border-bottom: 1px solid #ddd;'>Measured Noise Level</th>",
-              "<td style='padding: 5px; border-bottom: 1px solid #ddd;'>", site_data$Noise, "</td></tr>",
-              "<tr><th style='text-align:left; padding: 5px; border-bottom: 1px solid #ddd;'>Measured Air Quality Level</th>",
-              "<td style='padding: 5px; border-bottom: 1px solid #ddd;'>", site_data$Air, "</td></tr>",
-              "<tr><th style='text-align:left; padding: 5px; border-bottom: 1px solid #ddd;'>Available in the Soil Sample Library</th>",
-              "<td style='padding: 5px; border-bottom: 1px solid #ddd;'>", site_data$Soil_sample, "</td></tr>",
               "<tr><th style='text-align:left; padding: 5px; border-bottom: 1px solid #ddd;'>Date Last Assessed </th>",
               "<td style='padding: 5px; border-bottom: 1px solid #ddd;'>", site_data$Updates, "</td></tr>",
               "</table>",
@@ -191,57 +144,28 @@ server <- function(input, output, session) {
     }
   })
   
-  # Define reactive expressions for filters
-  filtered_data_by_zip <- reactive({
-    selected_zip <- input$source
-    
-    if (is.null(selected_zip)) {
-      sitedata
-    } else {
-      sitedata %>% filter(Zip_Code %in% selected_zip)
-    }
-  })
-  
-  filtered_data_by_city <- reactive({
-    selected_city <- input$City_source
-    
-    if (is.null(selected_city)) {
-      sitedata
-    } else {
-      sitedata %>% filter(City %in% selected_city)
-    }
-  })
-  
-  # Observe the filtered data and update the map
-  observe({
-    # Get the filtered data based on zip code
-    data_to_plot <- filtered_data_by_zip()
-    
-    # If city filter is applied, filter further by city
-    if (!is.null(input$City_source) && !"Reset" %in% input$City_source) {
-      data_to_plot <- data_to_plot %>% filter(City %in% input$City_source)
-    }
-    
-    leafletProxy("map") %>%
-      clearMarkers() %>%
-      addCircleMarkers(data = data_to_plot,
-                       lng = ~Longitude,
-                       lat = ~Latitude,
-                       popup = ~City,
-                       layerId = ~Site_ID,
-                       options = pathOptions(pane = "markersPane"))
-  })
+observe({
+  filtered <- reactive_data()
+  leafletProxy("map") %>%
+    clearMarkers()%>%
+    addCircleMarkers(
+      data=filtered, 
+      lng = ~Longitude, lat = ~Latitude,
+      popup = ~City, layerId = ~Site_ID
+    )
+})
+
+  # Render the Data Table and necessary actions for button in DT###################################
+  output$data_table <-renderDataTable({
+    datatable(sitedata, options = list(pageLength = 10, scrollX = TRUE))
+                                     })
+
+  # Render the about.Rmd file#################
+  output$about_developer <- renderUI({ includeMarkdown("About_the_developer.Rmd") })
+  output$data_dictionary <- renderUI ({ includeMarkdown("Data_Dictionary.Rmd") })
   
   
-  # Render the about.Rmd file
-  output$about_developer <- renderUI({
-    includeMarkdown("About_the_developer.Rmd")
-  })
-  output$data_dictionary <- renderUI ({
-    includeMarkdown("Data_Dictionary.Rmd")
-  })
-  
-  # observEvent for modal upon loading 
+  # Welcome Modal#######
   observe({
     showModal(modalDialog(
       title = "Welcome!",
