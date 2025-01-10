@@ -2,67 +2,164 @@
 body {
     font-family: Arial, sans-serif;
     color: #000000; /* Darker text for readability */
-    background-color: #f5f0e1; /* Light neutral brown background */
+    background-color: red !important; /* dark green  background */
+    margin: 0;
+    padding: 0;
 }
 
 /* Navbar styling */
-.navbar-default {
-    background-color: #a67c52; /* Neutral brown tone */
-    border-color: #8b5e3c;
+.navbar{
+    background-color: #879676; /* Neutral brown tone */
+    border-color: none;
 }
 
-.navbar-default .navbar-brand,
-.navbar-default .navbar-nav > li > a {
-    color: #000000 !important; /* Black text on navbar */
+.navbar .navbar-brand,
+.navbar-nav .nav-link {
+    color: #fff !important; /* White text for links */
     font-family: Arial, sans-serif;
 }
 
-/* Panel (sidebar) styling */
-.panel {
-    background-color: #f5f0e1;
-    color: #333;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    border: none;
+.navbar .navbar-nav .nav-link:hover {
+  background-color: #005bb5;
+  color: #fff !important;
 }
 
-/* Control and button styling */
+
+/* Panel (Controls) styling */
+
 #controls {
-    background-color: rgba(245, 240, 225, 0.8);
-    color: #333;
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 1px solid #ddd;
     padding: 15px;
-    font-family: Arial, sans-serif;
-}
-
-.btn {
-    background-color: #a67c52; /* Button color */
-    color: white;
-    border: none;
-}
-
-.btn:hover {
-    background-color: #8b5e3c; /* Darker hover color */
-    color: white;
-}
-
-/* Popup styling */
-.leaflet-popup-content-wrapper {
-    max-height: 150px; /*limit inital height */
-    overflow: hidden; /*Hide overflow text */
-    cursor: pointer; /*Show Pointer cursor */
-    background-color: #f5f0e1;
-    color: #333;
-    font-family: Arial, sans-serif;
     border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-.leaflet-popup-content-wrapper.expanded {
-  max-height: none; /* Removes height limit */
-  overflow: visible; /* Shows all content */
+#controls h2 {
+  font-size: 18px;
+  margin-bottom: 15px;
+  color: #0073e6;
 }
 
-.leaflet-popup-content h3 {
-    color: #a67c52;
-    margin-top: 0;
-    font-family: Arial, sans-serif;
+/*Buttons */ 
+
+.action-button {
+  background-color: #0073e6;
+  border: none;
+  color: White;
+  padding: 10px 15px;
+  text-align: center;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.acton-button:hover {
+  background-color: #005bb5;
+  
+}
+
+/* Picker Input Styling */
+.dropdown-menu {
+  max-height: 300px;
+  overflow-y: auto; /* Add scroll to long dropdowns */
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.dropdown-menu .dropdown-item {
+  padding: 10px;
+  font-size: 14px;
+}
+
+.dropdown-menu .dropdown-item:hover {
+  background-color: #f1f1f1;
+}
+
+/* Map Styling */
+.leaflet-container {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+/* Popup Styling */
+.leaflet-popup-content {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.leaflet-popup-content h4 {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.leaflet-popup-content img {
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Data Table */
+.dataTables_wrapper {
+  margin: 20px 0;
+}
+
+table.dataTable {
+  border-collapse: collapse !important;
+}
+
+table.dataTable thead {
+  background-color: #0073e6;
+  color: white;
+}
+
+table.dataTable tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* About Section Styling */
+.column {
+  padding: 20px;
+}
+
+.column h2 {
+  font-size: 22px;
+  color: #0073e6;
+  margin-bottom: 10px;
+}
+
+.column h5 {
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* Modal Styling */
+.modal-content {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  background-color: #0073e6;
+  color: white;
+  border-bottom: none;
+}
+
+.modal-footer .btn {
+  background-color: #0073e6;
+  color: white;
+}
+
+.modal-footer .btn:hover {
+  background-color: #005bb5;
+}
+
+/* Style for scrollable popup content */
+.scrollable-popup {
+  max-height: 200px; /* Adjust height as needed */
+  overflow-y: auto; /* Enables vertical scrolling */
+  padding: 5px;
+  font-family: Arial, sans-serif; /* Optional: set a consistent font */
 }
