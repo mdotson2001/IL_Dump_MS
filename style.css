@@ -1,8 +1,8 @@
 /* Set the overall font and colors */
 body {
     font-family: Arial, sans-serif;
-    color: #000000; /* Darker text for readability */
-    background-color: red !important; /* dark green  background */
+    color: #fff; /* Darker text for readability */
+    background-color: #879676 !important; /* dark green  background */
     margin: 0;
     padding: 0;
 }
@@ -135,31 +135,27 @@ table.dataTable tbody tr:hover {
 }
 
 /* Modal Styling */
-.modal-content {
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+.modal-title {
+  font-size: 20 px;
+  font-weight: bold;
+  color: black;
 }
 
-.modal-header {
-  background-color: #0073e6;
-  color: white;
-  border-bottom: none;
-}
-
-.modal-footer .btn {
-  background-color: #0073e6;
-  color: white;
-}
-
-.modal-footer .btn:hover {
-  background-color: #005bb5;
+.modal-dialog {
+  color: black;
+  background-color: white;
+  padding: 15px;
 }
 
 /* Style for scrollable popup content */
 .scrollable-popup {
-  max-height: 200px; /* Adjust height as needed */
+  max-height: 300px; /* Adjust height as needed */
   overflow-y: auto; /* Enables vertical scrolling */
   padding: 5px;
   font-family: Arial, sans-serif; /* Optional: set a consistent font */
+}
+.popup-title {
+  font-family: Arial, Sans-Serif;
+  font-weight: bold;
+  font-size: 18px;
 }
